@@ -51,9 +51,27 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
   immich.mount(
     {
       type: "assets",
-      subpath: 'immich',
+      subpath: "immich",
     },
     "/assets"
+  )
+  immich.mount(
+    {
+      id: "main",
+      type: "volume",
+      subpath: "immich/photos",
+      readonly: false,
+    },
+    "/photos"
+  )
+  immich.mount(
+    {
+      id: "main",
+      type: "volume",
+      subpath: "immich/config",
+      readonly: false,
+    },
+    "/config"
   )
   console.debug(
     `######### immich sc GUID: ${immich.guid}`
@@ -95,11 +113,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     .addDaemon('primary', {
       subcontainer: immich,
       command: ['/assets/init.sh'],
-      mounts: sdk.Mounts.of()
-        .addVolume('main',
-          'immich',
-          '/data',
-          false),
+      mounts: sdk.Mounts.of(),
       ready: {
         display: 'Web Interface',
         fn: () =>
