@@ -1,3 +1,3 @@
 
-export const uiPort = 8080
-export const immichPort = 2283
+export const uiPort = 80
+export const apiPort = 8080
