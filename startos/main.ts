@@ -21,24 +21,16 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     POSTGRES_PASSWORD: 'postgres',
     POSTGRES_DB: 'immich',
   }
-  const db = await sdk.SubContainer.of(effects,
-    { imageId: "db" },
-    "db"
-  )
-  await db.mount(
-    {
-      type: "volume",
-      id: "main",
-      subpath: "db",
-      readonly: false
-    },
-    "/var/lib/postgresql/data",
-  )
   const dbMounts = sdk.Mounts.of()
     .addVolume('main',
       'db',
       '/var/lib/postgresql/data',
       false)
+  const db = await sdk.SubContainer.of(effects,
+    { imageId: "db" },
+    dbMounts,
+    "db"
+  )
 
   await db.exec(['docker-ensure-initdb.sh'], {
     env: dbEnv,
@@ -46,33 +38,25 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
 
   const immich = await sdk.SubContainer.of(effects,
     { imageId: "immich" },
+    sdk.Mounts.of()
+      .addAssets(
+        "immich",
+        "/assets")
+      .addVolume(
+        "main",
+        "immich/photos",
+        "/photos",
+        false,
+      )
+      .addVolume(
+        "main",
+        "immich/config",
+        "/photos",
+        false,
+      ),
     "immich"
   )
-  immich.mount(
-    {
-      type: "assets",
-      subpath: "immich",
-    },
-    "/assets"
-  )
-  immich.mount(
-    {
-      id: "main",
-      type: "volume",
-      subpath: "immich/photos",
-      readonly: false,
-    },
-    "/photos"
-  )
-  immich.mount(
-    {
-      id: "main",
-      type: "volume",
-      subpath: "immich/config",
-      readonly: false,
-    },
-    "/config"
-  )
+
   console.debug(
     `######### immich sc GUID: ${immich.guid}`
   )
