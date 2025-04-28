@@ -8,7 +8,7 @@ export const manifest = setupManifest({
   upstreamRepo: 'https://github.com/immich-app/immich',
   supportSite: 'https://docs.start9.com/',
   marketingSite: 'https://immich.app',
-  donationUrl: 'https://donate.start9.com/',
+  donationUrl: 'https://immich.app/docs/overview/support-the-project',
   description: {
     short: 'Self-hosted photo and video management solution',
     long: 'Easily back up, organize, and manage your photos on your own server. Immich helps you browse, search and organize your photos and videos with ease, without sacrificing your privacy.',
