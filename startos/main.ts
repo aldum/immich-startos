@@ -10,6 +10,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
 
   const valkey = await sdk.SubContainer.of(effects,
     { imageId: "valkey" },
+    sdk.Mounts.of(),
     "valkey",
   )
   await valkey.exec(
@@ -65,7 +66,6 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     .addDaemon('valkey', {
       subcontainer: valkey,
       command: 'valkey-server',
-      mounts: sdk.Mounts.of(),
       ready: {
         display: null,
         fn: () =>
@@ -77,12 +77,11 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
       requires: [],
     })
     .addDaemon('db', {
-      subcontainer: { imageId: 'db' },
+      subcontainer: db,
       command: ["gosu", "postgres", "postgres",
         "-c", "shared_preload_libraries=vectors.so",
         "-c", "search_path=\"$user\", public, vectors",
         "-c", "logging_collector=on"],
-      mounts: dbMounts,
       ready: {
         display: null,
         fn: () =>
@@ -97,7 +96,6 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     .addDaemon('primary', {
       subcontainer: immich,
       command: ['/assets/init.sh'],
-      mounts: sdk.Mounts.of(),
       ready: {
         display: 'Web Interface',
         fn: () =>
