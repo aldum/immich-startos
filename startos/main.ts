@@ -52,7 +52,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
       .addVolume(
         "main",
         "immich/config",
-        "/photos",
+        "/config",
         false,
       ),
     "immich"
