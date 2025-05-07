@@ -18,8 +18,9 @@ export const manifest = setupManifest({
   images: {
     'immich': {
       source: {
-        dockerTag:
-          'ghcr.io/imagegenius/immich:alpine',
+        dockerBuild: {}
+        //   dockerTag:
+        //   'ghcr.io/imagegenius/immich:alpine',
       },
     },
     'db': {
