@@ -23,10 +23,12 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     POSTGRES_DB: 'immich',
   }
   const dbMounts = sdk.Mounts.of()
-    .addVolume('main',
-      'db',
-      '/var/lib/postgresql/data',
-      false)
+    .addVolume({
+      volumeId: 'main',
+      subpath: 'db',
+      mountpoint: '/var/lib/postgresql/data',
+      readonly: false
+    })
   const db = await sdk.SubContainer.of(effects,
     { imageId: "db" },
     dbMounts,
@@ -40,26 +42,31 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
   const immich = await sdk.SubContainer.of(effects,
     { imageId: "immich" },
     sdk.Mounts.of()
-      .addAssets(
-        "immich",
-        "/assets")
-      .addVolume(
-        "main",
-        "immich/photos",
-        "/photos",
-        false,
+      .addAssets({
+        subpath: "immich",
+        mountpoint: "/assets"
+      })
+      .addVolume({
+        volumeId: "main",
+        subpath: "immich/photos",
+        mountpoint: "/photos",
+        readonly: false,
+      }
       )
-      .addVolume(
-        "main",
-        "immich/config",
-        "/config",
-        false,
+      .addVolume({
+        volumeId: "main",
+        subpath: "immich/config",
+        mountpoint: "/config",
+        readonly: false,
+      }
       ),
     "immich"
   )
 
   console.debug(
-    `######### immich sc GUID: ${immich.guid}`
+    `######### immich sc GUID: ${immich.guid}\n`,
+    `######### postgr sc GUID: ${db.guid}\n`,
+    // `######### valkey sc GUID: ${valkey.guid}`
   )
 
   const daemons = sdk.Daemons.of(effects, started, healthChecks)
