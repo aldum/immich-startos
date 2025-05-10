@@ -23,18 +23,21 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     POSTGRES_DB: 'immich',
   }
   const dbMounts = sdk.Mounts.of()
-    .addVolume({
+    .mountVolume({
       volumeId: 'main',
       subpath: 'db',
       mountpoint: '/var/lib/postgresql/data',
       readonly: false
+    })
+    .mountAssets({
+      subpath: "db",
+      mountpoint: "/docker-entrypoint-initdb.d/"
     })
   const db = await sdk.SubContainer.of(effects,
     { imageId: "db" },
     dbMounts,
     "db"
   )
-
   await db.exec(['docker-ensure-initdb.sh'], {
     env: dbEnv,
   })
@@ -42,18 +45,18 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
   const immich = await sdk.SubContainer.of(effects,
     { imageId: "immich" },
     sdk.Mounts.of()
-      .addAssets({
+      .mountAssets({
         subpath: "immich",
         mountpoint: "/assets"
       })
-      .addVolume({
+      .mountVolume({
         volumeId: "main",
         subpath: "immich/photos",
         mountpoint: "/photos",
         readonly: false,
       }
       )
-      .addVolume({
+      .mountVolume({
         volumeId: "main",
         subpath: "immich/config",
         mountpoint: "/config",
