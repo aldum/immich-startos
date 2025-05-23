@@ -1,10 +1,9 @@
 import { sdk } from './sdk'
 import { T } from '@start9labs/start-sdk'
-import { uiPort } from './utils'
+import { apiPort, uiPort } from './utils'
 
 export const main = sdk.setupMain(async ({ effects, started }) => {
   console.info('Starting Immich!')
-
 
   const healthChecks: T.HealthCheck[] = []
 
@@ -103,15 +102,16 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
       env: dbEnv,
       requires: [],
     })
-    .addDaemon('primary', {
+    .addDaemon('api', {
       subcontainer: immich,
-      command: ['/assets/init.sh'],
+      command: ['/init'],
+      runAsInit: true,
       ready: {
-        display: 'Web Interface',
+        display: 'Immich API',
         fn: () =>
-          sdk.healthCheck.checkPortListening(effects, uiPort, {
-            successMessage: 'The web interface is ready',
-            errorMessage: 'The web interface is not ready',
+          sdk.healthCheck.checkPortListening(effects, apiPort, {
+            successMessage: 'The API is ready',
+            errorMessage: '',
           }),
       },
       env: {
@@ -122,6 +122,20 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
         REDIS_HOSTNAME: 'localhost',
       },
       requires: ["db", "valkey"],
+    })
+    .addDaemon('web', {
+      subcontainer: immich,
+      command: ['caddy', 'run',
+        '--config', '/assets/Caddyfile'],
+      ready: {
+        display: 'Web Interface',
+        fn: () =>
+          sdk.healthCheck.checkPortListening(effects, uiPort, {
+            successMessage: 'The web interface is ready',
+            errorMessage: '',
+          }),
+      },
+      requires: ["api"],
     })
 
   return daemons
