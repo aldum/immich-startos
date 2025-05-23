@@ -12,9 +12,6 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     sdk.Mounts.of(),
     "valkey",
   )
-  await valkey.exec(
-    ['sysctl', 'vm.overcommit_memory=1']
-  )
 
   const dbEnv = {
     POSTGRES_USER: 'postgres',
