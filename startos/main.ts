@@ -112,6 +112,8 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
           }),
       },
       env: {
+        PUID: '911',
+        PGID: '1000',
         DB_HOSTNAME: 'localhost',
         DB_USERNAME: 'postgres',
         DB_PASSWORD: 'postgres',
