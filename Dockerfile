@@ -1,5 +1,6 @@
-FROM ghcr.io/imagegenius/immich:alpine@sha256:d370bb5a40c283faf466d7c4eee185c84adbd1119bd83b5aef44d43973525f94
+FROM ghcr.io/imagegenius/immich:noml@sha256:8ddc1690cfddeaa6e5457f9aac5b9bf55bc7596fa39bac90dca4ad1e3cfbe04a
 
-RUN apk add --no-cache caddy
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt update && apt -y install caddy
 
 WORKDIR /app/immich/server
