@@ -18,7 +18,7 @@ check-init:
 		start-cli init; \
 	fi
 
-check-ts:
+check-ts: node_modules package-lock.json
 	@npm run check
 
 ${PACKAGE_ID}.s9pk: assets $(INGREDIENTS) | check-deps check-init
