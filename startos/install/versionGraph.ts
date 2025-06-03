@@ -7,8 +7,6 @@ export const versionGraph = VersionGraph.of({
   current,
   other,
   preInstall: async (effects) => {
-    const name = 'World'
-
     await Promise.all([
       // configYaml.write(effects, { name }),
       // store.write(effects, {
