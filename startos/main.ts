@@ -1,11 +1,8 @@
 import { sdk } from './sdk'
-import { T } from '@start9labs/start-sdk'
 import { apiPort, uiPort } from './utils'
 
 export const main = sdk.setupMain(async ({ effects, started }) => {
   console.info('Starting Immich!')
-
-  const healthChecks: T.HealthCheck[] = []
 
   const valkey = await sdk.SubContainer.of(effects,
     { imageId: "valkey" },
@@ -68,10 +65,12 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     // `######### valkey sc GUID: ${valkey.guid}`
   )
 
-  const daemons = sdk.Daemons.of(effects, started, healthChecks)
+  const daemons = sdk.Daemons.of(effects, started)
     .addDaemon('valkey', {
       subcontainer: valkey,
-      command: 'valkey-server',
+      exec: {
+        command: 'valkey-server',
+      },
       ready: {
         display: null,
         fn: () =>
@@ -84,10 +83,13 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     })
     .addDaemon('db', {
       subcontainer: db,
-      command: ["gosu", "postgres", "postgres",
-        "-c", "shared_preload_libraries=vectors.so",
-        "-c", "search_path=\"$user\", public, vectors",
-        "-c", "logging_collector=on"],
+      exec: {
+        command: ["gosu", "postgres", "postgres",
+          "-c", "shared_preload_libraries=vectors.so",
+          "-c", "search_path=\"$user\", public, vectors",
+          "-c", "logging_collector=on"],
+        env: dbEnv,
+      },
       ready: {
         display: null,
         fn: () =>
@@ -96,13 +98,23 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
             errorMessage: ''
           }),
       },
-      env: dbEnv,
       requires: [],
     })
     .addDaemon('api', {
       subcontainer: immich,
-      command: ['/init'],
-      runAsInit: true,
+      exec: {
+        command: ['/init'],
+        runAsInit: true,
+        env: {
+          PUID: '911',
+          PGID: '1000',
+          DB_HOSTNAME: 'localhost',
+          DB_USERNAME: 'postgres',
+          DB_PASSWORD: 'postgres',
+          DB_DATABASE_NAME: 'immich',
+          REDIS_HOSTNAME: 'localhost',
+        },
+      },
       ready: {
         display: 'Immich API',
         fn: () =>
@@ -111,21 +123,14 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
             errorMessage: '',
           }),
       },
-      env: {
-        PUID: '911',
-        PGID: '1000',
-        DB_HOSTNAME: 'localhost',
-        DB_USERNAME: 'postgres',
-        DB_PASSWORD: 'postgres',
-        DB_DATABASE_NAME: 'immich',
-        REDIS_HOSTNAME: 'localhost',
-      },
       requires: ["db", "valkey"],
     })
     .addDaemon('web', {
       subcontainer: immich,
-      command: ['caddy', 'run',
-        '--config', '/assets/Caddyfile'],
+      exec: {
+        command: ['caddy', 'run',
+          '--config', '/assets/Caddyfile'],
+      },
       ready: {
         display: 'Web Interface',
         fn: () =>
