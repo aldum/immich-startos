@@ -85,7 +85,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
       subcontainer: db,
       exec: {
         command: ["gosu", "postgres", "postgres",
-          "-c", "shared_preload_libraries=vectors.so",
+          "-c", "shared_preload_libraries=vchord.so",
           "-c", "search_path=\"$user\", public, vectors",
           "-c", "logging_collector=on"],
         env: dbEnv,

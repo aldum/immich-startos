@@ -25,7 +25,7 @@ export const manifest = setupManifest({
     },
     'db': {
       source: {
-        dockerTag: 'tensorchord/pgvecto-rs:pg14-v0.2.0',
+        dockerTag: 'ghcr.io/immich-app/postgres:14-vectorchord0.3.0-pgvectors0.2.0',
       },
     },
     'valkey': {
