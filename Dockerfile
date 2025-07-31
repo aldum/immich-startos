@@ -1,4 +1,4 @@
-FROM ghcr.io/imagegenius/immich:noml@sha256:034e2119862174091a9da644a0ea48ef3f39ec97d55dcf665397e9bef87147e6
+FROM ghcr.io/imagegenius/immich:noml@sha256:371c1e15b666cd184e7980fae613d3865703148c3e8b3259c65de03ba593d25c
 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt update && apt -y install caddy
