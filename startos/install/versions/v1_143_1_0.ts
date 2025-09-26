@@ -1,7 +1,7 @@
 import { VersionInfo, IMPOSSIBLE } from '@start9labs/start-sdk'
 
-export const v1_136_0_0 = VersionInfo.of({
-  version: '1.136.0:0',
+export const v1_143_1_0 = VersionInfo.of({
+  version: '#noml:1.143.1:0',
   releaseNotes: 'Initial release for StartOS',
   migrations: {
     up: async ({ }) => {
