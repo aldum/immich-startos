@@ -1,5 +1,5 @@
 import { sdk } from './sdk'
-import { apiPort, uiPort } from './utils'
+import { apiPort } from './utils'
 
 export const main = sdk.setupMain(async ({ effects, started }) => {
   console.info('Starting Immich!')
@@ -104,7 +104,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
       },
       requires: [],
     })
-    .addDaemon('api', {
+    .addDaemon('server', {
       subcontainer: immich,
       exec: {
         command: ['/init'],
@@ -120,30 +120,14 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
         },
       },
       ready: {
-        display: 'Immich API',
+        display: 'Immich API and web',
         fn: () =>
           sdk.healthCheck.checkPortListening(effects, apiPort, {
-            successMessage: 'The API is ready',
+            successMessage: 'Immich is ready',
             errorMessage: '',
           }),
       },
       requires: ["db", "valkey"],
-    })
-    .addDaemon('web', {
-      subcontainer: immich,
-      exec: {
-        command: ['caddy', 'run',
-          '--config', '/assets/Caddyfile'],
-      },
-      ready: {
-        display: 'Web Interface',
-        fn: () =>
-          sdk.healthCheck.checkPortListening(effects, uiPort, {
-            successMessage: 'The web interface is ready',
-            errorMessage: '',
-          }),
-      },
-      requires: ["api"],
     })
 
   return daemons

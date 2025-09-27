@@ -1,4 +1,10 @@
 import { setupManifest } from '@start9labs/start-sdk'
+import { SDKImageInputSpec } from '@start9labs/start-sdk/base/lib/types/ManifestTypes'
+
+const BUILD = process.env.BUILD || ''
+
+const architectures =
+  BUILD === 'x86_64' || BUILD === 'aarch64' ? [BUILD] : ['x86_64', 'aarch64']
 
 export const manifest = setupManifest({
   id: 'immich',
@@ -14,28 +20,31 @@ export const manifest = setupManifest({
     short: 'Self-hosted photo and video management solution',
     long: 'Easily back up, organize, and manage your photos on your own server. Immich helps you browse, search and organize your photos and videos with ease, without sacrificing your privacy.',
   },
-  assets: ['valkey', 'immich'],
+
+  // assets: ['valkey', 'immich', 'db'],
   volumes: ['main'],
   images: {
     'immich': {
+      arch: architectures,
       source: {
-        dockerBuild: {}
-        //   dockerTag:
-        //   'ghcr.io/imagegenius/immich:alpine',
+        // dockerBuild: {}
+        dockerTag: 'ghcr.io/imagegenius/immich:noml'
       },
-    },
+    } as SDKImageInputSpec,
     'db': {
+      arch: architectures,
       source: {
         dockerTag: 'ghcr.io/immich-app/postgres:14-vectorchord0.3.0-pgvectors0.2.0',
       },
-    },
+    } as SDKImageInputSpec,
     'valkey': {
+      arch: architectures,
       source: {
         dockerTag: 'valkey/valkey:alpine',
       },
-    },
+    } as SDKImageInputSpec,
   },
-  hardwareRequirements: {},
+  hardwareRequirements: { arch: architectures },
   alerts: {
     install: 'Optional alert to display before installing the service',
     update: null,
