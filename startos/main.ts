@@ -34,6 +34,10 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
   await db.exec(['docker-ensure-initdb.sh'], {
     env: dbEnv,
   })
+  // clean up pidfile
+  await db.exec(['rm', '-f', '/var/lib/postgresql/data/postmaster.pid'], {
+    env: dbEnv,
+  })
 
   const immich = await sdk.SubContainer.of(effects,
     { imageId: "immich" },
