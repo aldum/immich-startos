@@ -31,9 +31,6 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     dbMounts,
     "db"
   )
-  await db.exec(['docker-ensure-initdb.sh'], {
-    env: dbEnv,
-  })
   // clean up pidfile
   await db.exec(['rm', '-f', '/var/lib/postgresql/data/postmaster.pid'], {
     env: dbEnv,
