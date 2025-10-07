@@ -28,7 +28,7 @@ export const manifest = setupManifest({
       arch: architectures,
       source: {
         // dockerBuild: {}
-        dockerTag: 'ghcr.io/imagegenius/immich:2.0.0-noml'
+        dockerTag: 'ghcr.io/imagegenius/immich:2.0.1-noml'
       },
     } as SDKImageInputSpec,
     'db': {
