@@ -21,7 +21,12 @@ export const mounts = sdk.Mounts.of()
 export const getSubcontainer = async (
   effects: Effects,
   name: string = 'dbSub',
-) => await sdk.SubContainer.of(effects, { imageId: 'db' }, mounts, name)
+) => await sdk.SubContainer.of(
+  effects,
+  { imageId: 'db' },
+  mounts,
+  name,
+)
 
 type Manifest = typeof manifest
 type runFn<T> = (subContainer: SubContainer<Manifest>) => Promise<T>

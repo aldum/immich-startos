@@ -1,41 +1,42 @@
 import { sdk } from './sdk'
 import * as dbSub from './subcontainers/db'
-import { apiPort, psqlPort, valkeyPort } from './utils'
+import { apiPort, psqlDb, psqlHost, psqlPass, psqlPort, psqlUser, valkeyPort } from './utils'
 
 export const main = sdk.setupMain(async ({ effects, started }) => {
   console.info('Starting Immich!')
 
-  const valkey = await sdk.SubContainer.of(effects,
-    { imageId: "valkey" },
+  const valkey = await sdk.SubContainer.of(
+    effects,
+    { imageId: 'valkey' },
     sdk.Mounts.of(),
-    "valkey",
+    'valkey',
   )
 
   const dbEnv = dbSub.getEnv
   const db = await dbSub.getSubcontainer(effects)
 
   // clean up pidfile
-  await db.exec(['rm', '-f',
-    '/var/lib/postgresql/data/postmaster.pid'], {
+  await db.exec(['rm', '-f', '/var/lib/postgresql/data/postmaster.pid'], {
     env: dbEnv,
   })
 
-  const immich = await sdk.SubContainer.of(effects,
-    { imageId: "immich" },
+  const immich = await sdk.SubContainer.of(
+    effects,
+    { imageId: 'immich' },
     sdk.Mounts.of()
       .mountVolume({
-        volumeId: "main",
-        subpath: "immich/photos",
-        mountpoint: "/photos",
+        volumeId: 'main',
+        subpath: 'immich/photos',
+        mountpoint: '/photos',
         readonly: false,
       })
       .mountVolume({
-        volumeId: "main",
-        subpath: "immich/config",
-        mountpoint: "/config",
+        volumeId: 'main',
+        subpath: 'immich/config',
+        mountpoint: '/config',
         readonly: false,
       }),
-    "immich"
+    'immich',
   )
 
   const daemons = sdk.Daemons.of(effects, started)
@@ -49,7 +50,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
         fn: () =>
           sdk.healthCheck.checkPortListening(effects, valkeyPort, {
             successMessage: '',
-            errorMessage: ''
+            errorMessage: '',
           }),
       },
       requires: [],
@@ -57,10 +58,13 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     .addDaemon('db', {
       subcontainer: db,
       exec: {
-        command: ["gosu", "postgres", "postgres",
-          "-c", "shared_preload_libraries=vchord.so",
-          "-c", "search_path=\"$user\", public, vectors",
-          "-c", "logging_collector=on"],
+        command: [
+          'gosu', 'postgres',
+          'postgres',
+          '-c', 'shared_preload_libraries=vchord.so',
+          '-c', 'search_path="$user", public, vectors',
+          '-c', 'logging_collector=on',
+        ],
         env: dbEnv,
       },
       ready: {
@@ -68,7 +72,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
         fn: () =>
           sdk.healthCheck.checkPortListening(effects, psqlPort, {
             successMessage: '',
-            errorMessage: ''
+            errorMessage: '',
           }),
       },
       requires: [],
@@ -81,10 +85,10 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
         env: {
           PUID: '911',
           PGID: '1000',
-          DB_HOSTNAME: 'localhost',
-          DB_USERNAME: 'postgres',
-          DB_PASSWORD: 'postgres',
-          DB_DATABASE_NAME: 'immich',
+          DB_HOSTNAME: psqlHost,
+          DB_USERNAME: psqlUser,
+          DB_PASSWORD: psqlPass,
+          DB_DATABASE_NAME: psqlDb,
           REDIS_HOSTNAME: 'localhost',
         },
       },
@@ -96,7 +100,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
             errorMessage: '',
           }),
       },
-      requires: ["db", "valkey"],
+      requires: ['db', 'valkey'],
     })
 
   return daemons
