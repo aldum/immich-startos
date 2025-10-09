@@ -1,6 +1,6 @@
 import { sdk } from './sdk'
 import { T } from '@start9labs/start-sdk'
-import { apiPort } from './utils'
+import { apiPort, psqlPort } from './utils'
 
 export const setInterfaces = sdk.setupInterfaces(
   async ({ effects }: { effects: T.Effects }) => {
@@ -22,5 +22,29 @@ export const setInterfaces = sdk.setupInterfaces(
 
     const uiReceipt = await uiMultiOrigin.export([ui])
 
-    return [uiReceipt]
-  })
+    const dbMulti = sdk.MultiHost.of(effects, 'db')
+    const dbMultiOrigin = await dbMulti.bindPort(psqlPort, {
+      // protocol: 'http'
+      protocol: null,
+      addSsl: null,
+      preferredExternalPort: psqlPort,
+      secure: { ssl: true },
+    })
+    const db = sdk.createInterface(effects, {
+      name: 'DB (dev)',
+      id: 'db',
+      description: 'DB',
+      type: 'api',
+      masked: false,
+      schemeOverride: null,
+      username: null,
+      path: '',
+      query: {},
+    })
+    const dbReceipt = await dbMultiOrigin.export([db])
+
+    const ifaceReceipts = [uiReceipt, dbReceipt]
+    // const ifaceReceipts = [uiReceipt]
+    return ifaceReceipts
+  },
+)
