@@ -32,7 +32,7 @@ export const manifest = setupManifest({
     'db': {
       arch: architectures,
       source: {
-        dockerTag: 'ghcr.io/immich-app/postgres:14-vectorchord0.3.0-pgvectors0.2.0',
+        dockerTag: 'ghcr.io/immich-app/postgres:17-vectorchord0.4.3-pgvector0.8.1-pgvectors0.3.0',
       },
     } as SDKImageInputSpec,
     'valkey': {
