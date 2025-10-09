@@ -1,5 +1,6 @@
 import { sdk } from './sdk'
-import { apiPort } from './utils'
+import * as dbSub from './subcontainers/db'
+import { apiPort, psqlPort, valkeyPort } from './utils'
 
 export const main = sdk.setupMain(async ({ effects, started }) => {
   console.info('Starting Immich!')
@@ -10,27 +11,9 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     "valkey",
   )
 
-  const dbEnv = {
-    POSTGRES_USER: 'postgres',
-    POSTGRES_PASSWORD: 'postgres',
-    POSTGRES_DB: 'immich',
-  }
-  const dbMounts = sdk.Mounts.of()
-    .mountVolume({
-      volumeId: 'main',
-      subpath: 'db',
-      mountpoint: '/var/lib/postgresql/data',
-      readonly: false
-    })
-    .mountAssets({
-      subpath: "db",
-      mountpoint: "/docker-entrypoint-initdb.d/"
-    })
-  const db = await sdk.SubContainer.of(effects,
-    { imageId: "db" },
-    dbMounts,
-    "db"
-  )
+  const dbEnv = dbSub.getEnv
+  const db = await dbSub.getSubcontainer(effects)
+
   // clean up pidfile
   await db.exec(['rm', '-f',
     '/var/lib/postgresql/data/postmaster.pid'], {
@@ -64,7 +47,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
       ready: {
         display: null,
         fn: () =>
-          sdk.healthCheck.checkPortListening(effects, 6379, {
+          sdk.healthCheck.checkPortListening(effects, valkeyPort, {
             successMessage: '',
             errorMessage: ''
           }),
@@ -83,7 +66,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
       ready: {
         display: null,
         fn: () =>
-          sdk.healthCheck.checkPortListening(effects, 5432, {
+          sdk.healthCheck.checkPortListening(effects, psqlPort, {
             successMessage: '',
             errorMessage: ''
           }),
