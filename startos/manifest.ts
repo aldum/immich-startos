@@ -12,7 +12,7 @@ export const manifest = setupManifest({
   license: 'MIT',
   wrapperRepo: 'https://github.com/aldum/immich-startos',
   upstreamRepo: 'https://github.com/immich-app/immich',
-  supportSite: 'https://docs.start9.com/',
+  supportSite: 'https://github.com/aldum/immich-startos/issues',
   marketingSite: 'https://immich.app',
   donationUrl: 'https://immich.app/docs/overview/support-the-project',
   docsUrl: 'https://immich.app/docs/overview/welcome',
@@ -21,13 +21,11 @@ export const manifest = setupManifest({
     long: 'Easily back up, organize, and manage your photos on your own server. Immich helps you browse, search and organize your photos and videos with ease, without sacrificing your privacy.',
   },
 
-  // assets: ['valkey', 'immich', 'db'],
   volumes: ['main'],
   images: {
     'immich': {
       arch: architectures,
       source: {
-        // dockerBuild: {}
         dockerTag: 'ghcr.io/imagegenius/immich:2.0.1-noml'
       },
     } as SDKImageInputSpec,

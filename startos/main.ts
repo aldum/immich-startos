@@ -32,38 +32,27 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     "db"
   )
   // clean up pidfile
-  await db.exec(['rm', '-f', '/var/lib/postgresql/data/postmaster.pid'], {
+  await db.exec(['rm', '-f',
+    '/var/lib/postgresql/data/postmaster.pid'], {
     env: dbEnv,
   })
 
   const immich = await sdk.SubContainer.of(effects,
     { imageId: "immich" },
     sdk.Mounts.of()
-      .mountAssets({
-        subpath: "immich",
-        mountpoint: "/assets"
-      })
       .mountVolume({
         volumeId: "main",
         subpath: "immich/photos",
         mountpoint: "/photos",
         readonly: false,
-      }
-      )
+      })
       .mountVolume({
         volumeId: "main",
         subpath: "immich/config",
         mountpoint: "/config",
         readonly: false,
-      }
-      ),
+      }),
     "immich"
-  )
-
-  console.debug(
-    `######### immich sc GUID: ${immich.guid}\n`,
-    `######### postgr sc GUID: ${db.guid}\n`,
-    // `######### valkey sc GUID: ${valkey.guid}`
   )
 
   const daemons = sdk.Daemons.of(effects, started)
