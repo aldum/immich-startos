@@ -2,7 +2,7 @@ import { sdk } from './sdk'
 import * as dbSub from './subcontainers/db'
 import { apiPort, psqlDb, psqlHost, psqlPass, psqlPort, psqlUser, valkeyPort } from './utils'
 
-export const main = sdk.setupMain(async ({ effects, started }) => {
+export const main = sdk.setupMain(async ({ effects }) => {
   console.info('Starting Immich!')
 
   const valkey = await sdk.SubContainer.of(
@@ -39,7 +39,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
     'immich',
   )
 
-  const daemons = sdk.Daemons.of(effects, started)
+  const daemons = sdk.Daemons.of(effects)
     .addDaemon('valkey', {
       subcontainer: valkey,
       exec: {
