@@ -1,10 +1,4 @@
 import { setupManifest } from '@start9labs/start-sdk'
-import { SDKImageInputSpec } from '@start9labs/start-sdk/base/lib/types/ManifestTypes'
-
-const BUILD = process.env.BUILD || ''
-
-const architectures =
-  BUILD === 'x86_64' || BUILD === 'aarch64' ? [BUILD] : ['x86_64', 'aarch64']
 
 export const manifest = setupManifest({
   id: 'immich',
@@ -24,25 +18,22 @@ export const manifest = setupManifest({
   volumes: ['main'],
   images: {
     'immich': {
-      arch: architectures,
       source: {
         dockerTag: 'ghcr.io/immich-app/immich-server:v2.4.1'
       },
-    } as SDKImageInputSpec,
+    },
     'db': {
-      arch: architectures,
       source: {
         dockerTag: 'ghcr.io/immich-app/postgres:17-vectorchord0.4.3-pgvector0.8.1-pgvectors0.3.0',
       },
-    } as SDKImageInputSpec,
+    },
     'valkey': {
-      arch: architectures,
       source: {
         dockerTag: 'valkey/valkey:alpine',
       },
-    } as SDKImageInputSpec,
+    },
   },
-  hardwareRequirements: { arch: architectures },
+  hardwareRequirements: {},
   alerts: {
     install: 'Optional alert to display before installing the service',
     update: null,
