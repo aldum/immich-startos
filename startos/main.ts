@@ -26,14 +26,8 @@ export const main = sdk.setupMain(async ({ effects }) => {
     sdk.Mounts.of()
       .mountVolume({
         volumeId: 'main',
-        subpath: 'immich/photos',
-        mountpoint: '/photos',
-        readonly: false,
-      })
-      .mountVolume({
-        volumeId: 'main',
-        subpath: 'immich/config',
-        mountpoint: '/config',
+        subpath: 'immich',
+        mountpoint: '/data',
         readonly: false,
       }),
     'immich',
@@ -58,13 +52,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
     .addDaemon('db', {
       subcontainer: db,
       exec: {
-        command: [
-          'gosu', 'postgres',
-          'postgres',
-          '-c', 'shared_preload_libraries=vchord.so',
-          '-c', 'search_path="$user", public, vectors',
-          '-c', 'logging_collector=on',
-        ],
+        command: sdk.useEntrypoint(),
         env: dbEnv,
       },
       ready: {
@@ -80,11 +68,9 @@ export const main = sdk.setupMain(async ({ effects }) => {
     .addDaemon('server', {
       subcontainer: immich,
       exec: {
-        command: ['/init'],
+        command: sdk.useEntrypoint(),
         runAsInit: true,
         env: {
-          PUID: '911',
-          PGID: '1000',
           DB_HOSTNAME: psqlHost,
           DB_USERNAME: psqlUser,
           DB_PASSWORD: psqlPass,
