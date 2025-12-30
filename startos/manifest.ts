@@ -24,7 +24,7 @@ export const manifest = setupManifest({
     },
     'db': {
       source: {
-        dockerTag: 'ghcr.io/immich-app/postgres:17-vectorchord0.4.3-pgvector0.8.1-pgvectors0.3.0',
+        dockerTag: 'ghcr.io/immich-app/postgres:17-vectorchord0.5.3-pgvector0.8.1',
       },
     },
     'valkey': {
