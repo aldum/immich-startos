@@ -115,17 +115,59 @@ export const adminUser = sdk.Action.withInput(
   },
   // run
   async ({ effects, input }) => {
-    const users = await DB.getAdminUsers()
     console.log('========== DB test ==========')
     console.log(JSON.stringify(users, null, 2))
-    const pwHash = input.password // TODO: bcrypt
     console.log('----- create')
     console.log('|||||||||||||||||', adminId)
+    const pwHash = await hashPassword(input.password)
+
+    if (input.new) {
       const adminId = await DB.createUser(
         input.email as Email,
         input.username as Username,
         pwHash
       )
+
+      storeJson.merge(effects, {
+        admin: {
+          uuid: adminId,
+          pwHash: pwHash
+        }
+      })
+
+      return {
+        version: "1",
+        title: "Admin user created.",
+        message: null,
+        result: null,
+      }
+    } else {
+      const admin =
+        await storeJson.read(s => s.admin).once()
+      if (admin) {
+        const users = await DB.getAdminUsers()
+        console.log(JSON.stringify(users, null, 2))
+        const adminId = admin.uuid
+
+        const res =
+          await DB.updateUserPassword(adminId, pwHash)
+
+        if (res == true) {
+          storeJson.merge(effects, {
+            admin: {
+              pwHash: pwHash
+            }
+          })
+
+          return {
+            version: "1",
+            title: "Admin password was reset.",
+            message: null,
+            result: null,
+          }
+        }
+      }
+    }
 
   },
 )
