@@ -71,21 +71,6 @@ export const inputSpec = InputSpec.of({
       patterns: [],
     }
   }),
-  // password: Value.dynamicText(async ({ effects }) => {
-  //   return {
-  //     name: 'Password',
-  //     description: 'RPC Auth Password',
-  //     disabled: 'Cannot edit dependent specified password',
-  //     required: true,
-  //     default: null,
-  //     patterns: [
-  //       {
-  //         regex: '^[A-Za-z0-9_-]+$',
-  //         description: 'Must be alphanumeric (can contain underscore).',
-  //       },
-  //     ],
-  //   }
-  // }),
   new: Value.hidden<boolean>(),
 })
 
@@ -114,7 +99,8 @@ export const adminUser = sdk.Action.withInput(
   inputSpec,
   // prefill input
   async ({ effects }) => {
-    const adminUser = await storeJson.read((s) => s.admin).once()
+    const adminUser =
+      await storeJson.read((s) => s.admin).once()
 
     if (adminUser) {
       return {

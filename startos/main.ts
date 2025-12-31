@@ -16,9 +16,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
   const db = await dbSub.getSubcontainer(effects)
 
   // clean up pidfile
-  await db.exec(['rm', '-f', '/var/lib/postgresql/data/postmaster.pid'], {
-    env: dbEnv,
-  })
+  await db.exec([
+    'rm', '-f',
+    '/var/lib/postgresql/data/postmaster.pid'
+  ], { env: dbEnv, })
 
   const immich = await sdk.SubContainer.of(
     effects,
