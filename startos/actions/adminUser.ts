@@ -115,10 +115,6 @@ export const adminUser = sdk.Action.withInput(
   },
   // run
   async ({ effects, input }) => {
-    console.log('========== DB test ==========')
-    console.log(JSON.stringify(users, null, 2))
-    console.log('----- create')
-    console.log('|||||||||||||||||', adminId)
     const pwHash = await hashPassword(input.password)
 
     if (input.new) {
