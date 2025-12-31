@@ -14,12 +14,15 @@ const { InputSpec, Value } = sdk
 
 export const inputSpec = InputSpec.of({
   email: Value.dynamicText(async () => {
-    const adminExists = await storeJson.read((s) => s.admin).once()
-    const disabled = adminExists ? 'You can change the email in the UI' : false
+    const adminExists =
+      await storeJson.read((s) => s.admin).once()
+    const disabled = adminExists ?
+      'You can change the email in the UI' :
+      false
     return {
       name: 'Email',
       description: 'Admin email',
-      required: true,
+      required: !adminExists,
       default: null,
       inputmode: 'email',
       disabled: disabled,
@@ -104,7 +107,6 @@ export const adminUser = sdk.Action.withInput(
 
     if (adminUser) {
       return {
-        email: adminUser.email,
         password: '',
         new: false,
       }

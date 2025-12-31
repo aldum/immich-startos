@@ -5,7 +5,6 @@ const { object, string } = matches
 const shape = object({
   admin: object({
     uuid: string,
-    email: string,
     pwHash: string
   }).optional()
 })
