@@ -8,9 +8,6 @@ import {
   Email,
   Username,
 } from '../utils'
-import * as dbSub from '../subcontainers/db'
-import { SubContainer } from '@start9labs/start-sdk'
-import { manifest } from '../manifest'
 
 const { InputSpec, Value } = sdk
 
@@ -130,34 +127,5 @@ export const adminUser = sdk.Action.withInput(
         pwHash
       )
 
-    // await dbSub.withTemp(effects, async (subc) => {
-    //   const users = await DB.getUsers(subc)
-    //   console.log('========== DB test ==========')
-    //   console.log(JSON.stringify(users, null, 2))
-    //   const pwHash = input.password // TODO: bcrypt
-
-    //   console.log('----- create')
-    //   const create = await DB.createUser(input.email, input.username, pwHash)
-    //   const adminId = await create()
-    //   console.log('|||||||||||||||||', adminId)
-    // })
-
-    // const db = await dbSub.getSubcontainer(effects, "admin-action")
-    // await sdk.SubContainer.withTemp(
-    //   effects,
-    //   { imageId: 'db' },
-    //   dbSub.mounts,
-    //   'db-adminuser-action',
-    //   async (subC) => {
-    //     subC.execFail(
-    //       ['docker-ensure-initdb.sh'],
-    //       {
-    //         env: dbSub.getEnv,
-    //       }
-    //     )
-    //   }
-    // )
-
-    // const c = await getAdminUserCount(db)
   },
 )
