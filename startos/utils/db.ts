@@ -13,6 +13,14 @@ export const psqlPass = 'postgres'
 export const psqlDb = 'immich'
 export const psqlPort = 5432
 
+export type Email = string & {
+  readonly brand: unique symbol
+}
+
+export type Username = string & {
+  readonly brand: unique symbol
+}
+
 export class DB {
   private static sql = postgres({
     host: psqlHost,
@@ -33,8 +41,8 @@ export class DB {
   }
 
   static createUser = async (
-    email: string,
-    name: string,
+    email: Email,
+    name: Username,
     pwHash: string,
   ): Promise<string> => {
     const sql = this.sql

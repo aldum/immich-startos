@@ -5,6 +5,8 @@ import {
   generatePassword,
   hashPassword,
   DB,
+  Email,
+  Username,
 } from '../utils'
 import * as dbSub from '../subcontainers/db'
 import { SubContainer } from '@start9labs/start-sdk'
@@ -126,8 +128,12 @@ export const adminUser = sdk.Action.withInput(
     console.log(JSON.stringify(users, null, 2))
     const pwHash = input.password // TODO: bcrypt
     console.log('----- create')
-    const adminId = await DB.createUser(input.email, input.username, pwHash)
     console.log('|||||||||||||||||', adminId)
+      const adminId = await DB.createUser(
+        input.email as Email,
+        input.username as Username,
+        pwHash
+      )
 
     // await dbSub.withTemp(effects, async (subc) => {
     //   const users = await DB.getUsers(subc)
