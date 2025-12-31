@@ -83,14 +83,9 @@ export const adminUser = sdk.Action.withInput(
   'admin-user-ops',
   // metadata
   async ({ effects }) => {
-    const adminUser =
-      await storeJson.read((s) => s.admin).const(effects)
-    // const label = adminUser ? 'Reset admin password' : 'Create admin user'
-
-    const admins = await DB.getAdminUsers()
-    const admin = admins[0]
-    console.log(JSON.stringify(admins, null, 2))
-    const label = admin ? 'Reset admin password' : 'Create admin user'
+    const store = await storeJson.read().const(effects)
+    const adminUser = store?.admin
+    const label = adminUser ? 'Reset admin password' : 'Create admin user'
 
     return {
       name: label,
