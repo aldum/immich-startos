@@ -73,6 +73,25 @@ export class DB {
       .values()
       .then((res) => res[0][0] as string)
   }
+
+  static updateUserPassword = async (
+    uuid: string,
+    pwHash: string
+  ): Promise<true | string> => {
+    const sql = this.sql
+    const id = sql`${uuid}`
+    const pw = sql`${pwHash}`
+
+    return this.sql`
+      UPDATE ${this.usersTable}
+      SET password = ${pw}
+      WHERE id = ${id}`
+      .values()
+      .then(() => true)
+      .catch((err) => err)
+  }
+
+  // end of class
 }
 
 
