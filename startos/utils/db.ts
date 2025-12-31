@@ -28,7 +28,7 @@ export class DB {
     return this.sql`
       SELECT *
       FROM ${this.usersTable}
-      WHERE isAdmin = true`
+      WHERE "isAdmin" = true`
       .values()
   }
 
@@ -65,7 +65,7 @@ export class DB {
 
     return this.sql`
       INSERT INTO ${this.usersTable} (
-        email, password, name
+        email, name, password
       ) VALUES (
         ${em}, ${na}, ${pw}
       )
