@@ -80,10 +80,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
         },
       },
       ready: {
-        display: 'Immich API and web',
+        display: 'Immich',
         fn: () =>
           sdk.healthCheck.checkPortListening(effects, apiPort, {
-            successMessage: 'Immich is ready',
+            successMessage: '',
             errorMessage: '',
           }),
       },
