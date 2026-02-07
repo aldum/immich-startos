@@ -1,6 +1,10 @@
 import { sdk } from './sdk'
 import * as dbSub from './subcontainers/db'
-import { apiPort, psqlDb, psqlHost, psqlPass, psqlPort, psqlUser, valkeyPort } from './utils'
+import {
+  apiPort, DB,
+  psqlDb, psqlHost, psqlPass, psqlPort, psqlUser,
+  valkeyPort
+} from './utils'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   console.info('Starting Immich!')
@@ -23,7 +27,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
 
   const immich = await sdk.SubContainer.of(
     effects,
-    { imageId: 'immich' },
+    {
+      imageId: 'immich',
+      sharedRun: true
+    },
     sdk.Mounts.of()
       .mountVolume({
         volumeId: 'main',

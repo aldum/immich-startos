@@ -23,7 +23,7 @@ export const getSubcontainer = async (
   name: string = 'dbSub',
 ) => await sdk.SubContainer.of(
   effects,
-  { imageId: 'db' },
+  { imageId: 'db', sharedRun: true },
   mounts,
   name,
 )
